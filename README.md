@@ -11,5 +11,9 @@ cd /path/to/folder/with/main.lua
 love .
 ```
 
+(To add to PATH in Mac: `export PATH=$PATH:/Applications/love.app/Contents/MacOS/`
+
+To make the change permanent, you will have to add that line to your ~/.profile file.)
+
 # Assets
 12x12 RPG Tileset by Cyporkador https://cypor.itch.io/12x12-rpg-tileset
