@@ -3,33 +3,75 @@
 --[[ This is how a long, multiline comment is done in Lua,
 by using 'long brackets' (i.e. double square brackets) ]]
 
-function love.load()
-    Tileset = love.graphics.newImage('tilesets/rpgtileset_cyporkador.png')
-    TileWidth, TileHeight = 32, 32 -- width and height of one tile (in pixels)
-    local tilesetW, tilesetH = Tileset:getWidth(), Tileset:getHeight() -- width and height of entire tileset
-
-    Quads = {
-        love.graphics.newQuad(216, 60, TileWidth, TileHeight, tilesetW, tilesetH), -- GrassQuad
-        love.graphics.newQuad(264, 156, TileWidth, TileHeight, tilesetW, tilesetH) -- WaterQuad
-    }
+-- [[ MY FUNCTIONS ]]
+-- Function for moving object to where mouse is when it is grabbed
+function drag(obj)
+    cursorX, cursorY = love.mouse.getPosition( )
+    obj.posX = cursorX
+    obj.posY = cursorY
 end
 
-function love.draw()
-    TileTable = {
-        {1,1,1,1},
-        {2,2,2,2,2},
-        {1,1,1,1}
-    }
-    
-    for rowIndex=1, #TileTable do -- for index 1 to TileTable.length()
-        local row = TileTable[rowIndex] -- {1,1,1} etc.
-        for columnIndex=1, #row do
-            local index = row[columnIndex]
-            local x = (columnIndex-1)*TileWidth
-            local y = (rowIndex-1)*TileHeight
-            love.graphics.draw(Tileset, Quads[index], x, y) -- Lua is weird and 1-indexes
+function clearGrabbed()
+    for i=1, #potionObjectList do
+        potionObjectList[i].grabbed = false
+    end
+end
+
+function checkMousePosition()
+    -- Check if mouse clicked on any of the potions
+    for i=1, #potionObjectList do
+        if(
+            (love.mouse.getX() > potionObjectList[i].posX - delta and love.mouse.getX() < potionObjectList[i].posX + delta) and
+            (love.mouse.getY() > potionObjectList[i].posY - delta and love.mouse.getY() < potionObjectList[i].posY + delta)
+        ) then
+            potionObjectList[i].grabbed = true
         end
     end
 end
 
--- 216:60 to 251:95 ==> 35x35
+
+-- [[ LUA FUNCTIONS ]]
+function love.load()
+    cursor = love.mouse.getCursor( )
+    delta = 50
+
+    background = love.graphics.newImage("assets/background.png")
+
+    potionObject = {
+        image = love.graphics.newImage('assets/potion.png'),
+        posX = 100,
+        posY = 100,
+        grabbed = false
+    }
+
+    potionObject2 = {
+        image = love.graphics.newImage('assets/potion.png'),
+        posX = 300,
+        posY = 400,
+        grabbed = false
+    }
+
+    potionObjectList = { potionObject, potionObject2 }
+end
+
+function love.draw()
+    love.graphics.draw(background, 0, 0)
+
+    for i=1, #potionObjectList do
+        love.graphics.draw(potionObjectList[i].image, potionObjectList[i].posX, potionObjectList[i].posY)
+    end
+end
+
+function love.update()
+    if(love.mouse.isDown("1")) then
+        checkMousePosition()
+    else
+        clearGrabbed()
+    end
+
+    for i=1, #potionObjectList do
+        if(potionObjectList[i].grabbed) then
+            drag(potionObjectList[i])
+        end
+    end
+end
