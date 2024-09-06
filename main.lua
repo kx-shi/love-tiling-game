@@ -1,7 +1,5 @@
 -- main.lua file
 
-local moonshine = require 'moonshine'
-
 -- [[GLOBAL OBJECTS]]
 -- IMAGE_ITEMBOX = love.graphics.newImage("assets/itembox.png")
 IMAGE_BACKGROUND = love.graphics.newImage("graphics/background.png")
@@ -76,6 +74,19 @@ function createObject(image, x, y, width, height)
     }
 end
 
+function drawOutline(object)
+    love.graphics.setShader(shaderTest)
+    love.graphics.draw(
+        interactableObjectList[1].image,
+        interactableObjectList[1].posX,
+        interactableObjectList[1].posY,
+        0,
+        interactableObjectList[1].scale,
+        interactableObjectList[1].scale
+    )
+    love.graphics.setShader()
+end
+
 
 -- [[ LUA FUNCTIONS ]]
 function love.load()
@@ -104,17 +115,7 @@ end
 function love.draw()
     love.graphics.draw(IMAGE_BACKGROUND, 0, 0)
 
-    love.graphics.draw(
-        interactableObjectList[1].image,
-        interactableObjectList[1].posX,
-        interactableObjectList[1].posY,
-        0,
-        interactableObjectList[1].scale,
-        interactableObjectList[1].scale
-    )
-
-    if (interactableObjectList[1].outline) then
-        love.graphics.setShader(shaderTest)
+    for i=1, #interactableObjectList do
         love.graphics.draw(
             interactableObjectList[1].image,
             interactableObjectList[1].posX,
@@ -123,24 +124,10 @@ function love.draw()
             interactableObjectList[1].scale,
             interactableObjectList[1].scale
         )
-        love.graphics.setShader()
+        if (interactableObjectList[1].outline) then
+            drawOutline(interactableObjectList[1])
+        end
     end
-
-
-    --[[
-    for i=1, #interactableObjectList do
-        effect(function()
-            love.graphics.draw(
-                interactableObjectList[i].image,
-                interactableObjectList[i].posX,
-                interactableObjectList[i].posY,
-                0,
-                interactableObjectList[i].scale,
-                interactableObjectList[i].scale
-            )
-        end)
-    end
-    --]]
 end
 
 function love.update()
